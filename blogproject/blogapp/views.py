@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .models import Blog
 from django.utils import timezone
 from .forms import BlogForm
+from .forms import BlogModelForm
 
 # Create your views here.
 def home(request):
@@ -27,9 +28,28 @@ def create(request):
 # 둘 다 처리가 가능한  함수
 
 def formcreate(request):
-    if request.method = 'POST':
+    if request.method == 'POST':
       #입력 내용을 DB에 저장 
+      form = BlogForm(request.POST)
+      if form.is_valid():
+        post = Blog()
+        post.title = form.cleaned_data['title']
+        post.body = form.cleaned_data['body']
+        post.save()
+        return redirect('home')
     else:
       # 입력을 받을 수 있는 HTM을 갖다 주기
       form = BlogForm()
     return render(request,'form_create.html', {'form': form})
+
+def modelformcreate(request):
+  if request.method == 'POST':
+      #입력 내용을 DB에 저장 
+      form = BlogModelForm(request.POST)
+      if form.is_valid():
+        form.save()
+        return redirect('home')
+  else:
+      # 입력을 받을 수 있는 HTM을 갖다 주기
+      form = BlogModelForm()
+  return render(request,'form_create.html', {'form': form})
